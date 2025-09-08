@@ -147,6 +147,94 @@ fs.mkdir("new_dir", (err)=>{
     }
 })
 
+# Delete a directory
+
+// Sync Call
+fs.rmSync('new_dir', { recursive: true })
+
+⭐️ NodeJS Working
+
+# Async Call
+
+User Request
+    |
+    V
+Event Queue (Stores Request)
+    |
+    V
+Event Loop (Checks for the request)
+    |
+    V
+Non-Blocking operation
+    |
+    V
+Returns response
+
+# Sync Call
+
+User Request
+    |
+    V
+Event Queue (Stores Request)
+    |
+    V
+Event Loop (Checks for the request)
+    |
+    V
+Blocking operation
+    |
+    V
+Assign Task to thread/worker from treadpool
+    |
+    V
+Returns response
+
+⭐️ Building WebServer
+
+// S1. Importing built-in 'http' module
+let http = require("http");
+
+// S2. Creating WebServer
+let myServer = http.createServer((req, res)=>{          // The callback Fn is the request Handler.
+    //code
+})
+
+// S3. To Set port number :
+http.listen(3000, ()=>{
+    console.log("Server Started")
+})
+
+// 🎈 Example 1 : 
+
+let http = require("http");
+let fs = require("fs")
+
+let myServer = http.createServer((req, res) => {
+    fs.appendFile("log.txt", `${Date.now()} : ${req.url}\n`, (err)=>{
+        if(err){
+            console.log(err.message)
+        }
+    })
+    res.end("Thankyou for visiting.")
+})
+
+myServer.listen(3000, ()=>{
+    console.log("Server started")
+})
+
+⭐️ Handling URL
+
+// Install Package
+npm i url
+
+// Import Package
+let url = require("url")
+
+// Parsing URL
+let myURL = url.parse(req.url)
+
+console.log(myURL.pathname)         // To get pathName
+
 
 
 

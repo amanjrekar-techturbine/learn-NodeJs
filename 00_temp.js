@@ -1,5 +1,5 @@
-const math = require("./02_modules")
+let url = new URL("https://www.youtube.com/results?search_query=http+mthods&pageNo=three+and+four")
 
-console.log(math)
-// console.log(add(44, 77))
-// console.log(sub(44, 77))
+console.log(url)
+console.log(url.search)
+console.log(url.searchParams.get("search_query"))
