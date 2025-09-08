@@ -23,21 +23,36 @@ let url = require("url")
 
 // 🎈 Example 2 : Handling URL
 
-let myServer = http.createServer((req, res) => {
+// let myServer = http.createServer((req, res) => {
 
-    if(req.url === "/favicon.ico"){return res.end()}
+//     if(req.url === "/favicon.ico"){return res.end()}
 
-    let myURL = url.parse(req.url)
+//     let myURL = url.parse(req.url)
 
-    fs.appendFile("log.txt", `${Date.now()} : ${myURL.pathname}\n`, (err)=>{
-        if(err){
-            console.log(err.message)
-        }
-    })
+//     fs.appendFile("log.txt", `${Date.now()} : ${req.method} ${myURL.pathname}\n`, (err)=>{
+//         if(err){
+//             console.log(err.message)
+//         }
+//     })
 
-    res.end("Thankyou for visiting.")
-})
+//     switch(myURL.pathname){
+//         case "/":
+//             return res.end("This is a Home Page.");
+//             break;
+//         case "/about":
+//             return res.end("This is a About Page.");
+//             break;
+//         case "/contact":
+//             return res.end("This is a Contact Page.");
+//             break;
+//         default :
+//             return res.end("404 Page Not Found")
+//             break;
+//     }
 
-myServer.listen(3000, ()=>{
-    console.log("Server started")
-})
+    
+// })
+
+// myServer.listen(3000, ()=>{
+//     console.log("Server started")
+// })
