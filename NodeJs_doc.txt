@@ -40,3 +40,113 @@ exports.sub = (a, b) => a - b
 # To import module :
 
 const math = require("./02_modules")
+
+⭐️ File Handling :
+
+let fs = require('./fs')            // Importing built-in module to enable file handling
+
+# To create/write File
+
+Syncronous Call
+fs.writeFileSync("./text.txt", "Hello World 123")
+
+Asyncronous Call
+fs.writeFile("./text.txt", "Async Hello World", (err) => {          // Callback Fn runs when execution is completed
+    if (err) {
+        console.error('Error writing file:', err);
+        return;
+    }
+    console.log('File written successfully.');
+})
+
+# To read a file
+
+// Synchronous Call
+let fileData = fs.readFileSync("text.txt", "utf-8")
+console.log(fileData)
+
+// Async Call
+fs.readFile("text.txt", "utf-8", (err, data)=>{     // ‼️ Note that readFile() returns undefined
+    if(err){
+        console.log("Error : " + err)
+    }else{
+        console.log(data)
+    }
+})
+
+# Append content in File
+
+// Sync Call
+fs.appendFileSync("./text.txt", "\n This is a new line.")
+
+// Async Call
+fs.appendFile("./text.txt", "\n This is a new async line.", (err) => {         
+    if (err) {
+        console.error('Error writing file:', err);
+        return;
+    }
+})
+
+# Copy a file to another file
+
+// Sync Call
+fs.copyFileSync("text.txt", "destination.txt")
+
+// Async Call
+fs.copyFile("./00_temp.js", "./destination.txt", (err) => {
+    if (err) {
+        console.error('Error writing file:', err);
+        return;
+    }
+})
+
+# Delete a file 
+
+// Sync Call
+fs.unlinkSync("destination.txt")
+
+// Async Call
+fs.unlink("destination.txt", (err) => {
+    if (err) {
+        console.error('Error deleting file:', err.message);
+        return;
+    }
+})
+
+# Get file stats
+
+// Sync Call
+let info = fs.statSync("./package.json");
+
+console.log(info);                           // Returns obj   
+console.log(info.isFile());                  // Returns boolean
+console.log(info.isDirectory());             // Returns boolean
+console.log(info.size);                      // Returns bytes
+console.log('Created on:', info.birthtime);
+
+// Async Call
+fs.stat("./package.json", (err, stats) => {
+    if (err) {
+        console.error(err.message);
+        return;
+    }
+
+    console.log(stats)
+})
+
+# Create a directory
+
+// Sync Call
+fs.mkdirSync("new_dir")                     // ‼️ Throws error if directory already exists
+
+// Async Call
+fs.mkdir("new_dir", (err)=>{
+    if (err) {
+        console.error(err.message);
+        return;
+    }
+})
+
+
+
+
