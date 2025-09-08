@@ -1,0 +1,42 @@
+⭐️ Node JS
+It is a javascript runtime environment.
+NodeJS allows javascript to run outside of browser
+
+⭐️ npm init
+It is used to initialize new NodeJs project by creating a package.json file
+
+⭐️ package.json
+package.json is the metadata file for your project.
+It includes info like:
+    Project name, version, author
+    Scripts (like npm start)
+    Dependencies (packages you install)
+    License, repository URL, etc.
+
+⭐️ Module :
+In JavaScript, a module is a file that encapsulates code and exports things (functions, variables, classes, etc.) that can be reused in other files.
+
+# To export module :
+
+🎈 Way 1 : 
+function add(a, b){
+    return a + b
+}
+
+function sub(a, b){
+    return a - b
+}
+
+module.exports = {      // Returns a single object
+    add,
+    sub
+}
+
+🎈 Way 2 :
+exports.add = (a, b) => a + b
+
+exports.sub = (a, b) => a - b
+
+# To import module :
+
+const math = require("./02_modules")
