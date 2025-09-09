@@ -1,27 +1,26 @@
 let fs = require("fs");
-let http = require("http");
 let express = require("express");
 
-let app = express();
+let app = express()
 
-app.get("/", (req, res) => {
-    fs.appendFileSync("log.txt", `${Date.now()} : ${req.method} ${req.path}`);
-    res.send("This is a home page");
+app.use((req, res, next) => {
+    console.log("This is middleware 1")
+    next()
 })
 
-app.get("/about", (req, res) => {
-    fs.appendFileSync("log.txt", `${Date.now()} : ${req.method} ${req.path}`);
-    res.send("This is a about page");
+app.use((req, res, next) => {
+    console.log("This is middleware 2")
+    fs.appendFile("log.txt", `\n${Date.now()} : ${req.method} ${req.path}`, (err)=>{
+
+    })
+    next()
 })
 
-app.get("/contact", (req, res) => {
-    fs.appendFileSync("log.txt", `${Date.now()} : ${req.method} ${req.path}`);
-    res.send("This is a contact page");
+app.get("/api/users/:id", (req, res)=>{
+    let id = req.params.id;
+    res.json({ status : "success", id })
 })
 
 app.listen(3000, ()=>{
-    console.log("Server Started")
+    console.log("Server Started");
 })
-
-
-

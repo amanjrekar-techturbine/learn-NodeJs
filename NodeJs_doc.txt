@@ -364,6 +364,59 @@ app
         return res.json({ status: "pending" })
     })
 
+⭐️ middleware
 
+A middleware is a function that executes during the request-response cycle and can:
+Modify the request or response
+End the request-response cycle
+Pass control to the next middleware in the stack
 
+// 🎈 FLOW :
 
+client -> middleware1 -> middleware2 -> middleware3 -> server
+
+// 🎈 To create custom middleware
+
+app.use((req, res, next)=>{
+    console.log("Hello from middleware 1");
+    next()                                      // Calls next middleware
+})
+
+// 🎈 middleware Chaining
+
+// To create custom middleware
+app.use((req, res, next)=>{
+    console.log("Hello from middleware 1");
+    next()
+})
+
+app.use((req, res, next) => {
+    console.log("This is middleware 2")
+    next()
+})
+
+// 🎈 Modifying Req/Res object
+
+app.use((req, res, next) => {
+    console.log("Hello from middleware 1");
+    req.username = "Ankit Manjrekar"                    // Adding Property
+    next()
+})
+
+app.use((req, res, next) => {
+    console.log("This is middleware 2")
+    console.log(req.username)
+    return res.send({ status: "success" })
+})
+
+// 🎈 Terminating req/res cycle using middleware
+
+app.use((req, res, next) => {
+    console.log("Hello from middleware 1");
+    next()
+})
+
+app.use((req, res, next) => {
+    console.log("This is middleware 2")
+    return res.send({ status: "success" })          // This will end the request without reaching the server
+})
