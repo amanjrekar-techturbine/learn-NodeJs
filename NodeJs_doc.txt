@@ -43,7 +43,7 @@ const math = require("./02_modules")
 
 ⭐️ File Handling :
 
-let fs = require('./fs')            // Importing built-in module to enable file handling
+let fs = require('fs')            // Importing built-in module to enable file handling
 
 # To create/write File
 
@@ -278,6 +278,92 @@ app.get("/contact", (req, res)=>{
 app.listen(3000, ()=>{
     console.log("Server started")
 })
+
+⭐️ Versioning in nodeJS
+
+Suppose version = ^4.18.2
+
+^                       -> Locks the major version (e.g. ^4.18.2, the version can update from 4.18.2 < 5.0.0)
+~                       -> Accepts only patch update
+1st Part : 4    (Major) -> Redesigns (If code depends on Express4 behavior, upgrading to Express5 might crash or break your app unless you refactor it.)
+2nd Part : 18   (Minor) -> New Features (No breaking changes — your current code continues to work)
+3rd Part : 2    (Patch) -> Bug Fixes (Optional)
+
+⭐️ Building REST API using nodeJS and expressJS
+
+// S1. Import ExpressJS package
+let express = require("express");
+
+// S2. Create app of the package
+let app = express();
+
+// S3. Create app of the package
+let app = express();
+
+// 🎈 Get Request
+
+app.get("/api/users", (req, res)=>{
+    res.send(mock_data)                         // Returns response
+})
+
+// 🎈 Get Request using dynamic routing (Get ID from the URL)
+
+app.get("/api/users/:id", (req, res) => {
+    console.log(req.params.id)                  // req.params.id returns string
+    res.send("Hello World")
+})
+
+// 🎈 POST Request
+
+app.post("/api/users", (req, res)=>{
+    return res.json( { status : "pending" } )
+})
+
+// 🎈 PATCH Request
+
+app.patch("/api/users/:id", (req, res)=>{
+    let id = req.params.id
+    return res.json( { status : "pending" } )
+})
+
+// 🎈 DELETE Request
+
+app.delete("/api/users/:id", (req, res)=>{
+    let id = req.params.id
+    return res.json( { status : "pending" } )
+})
+
+// 🎈 Chaining routes for common URL
+
+// ✅ app.route() returns a Route object — not a middleware, not a router.
+// This Route object allows you to chain HTTP method handlers (like .get(), .post(), etc.) for a single path.
+
+app
+    .route("/api/users")
+    .get((req, res) => {
+        if (req.path == "/fav.ico") { return; }
+        res.send(mock_data)
+    })
+    .post((req, res) => {
+        return res.json({ status: "pending" })
+    })
+
+app
+    .route("/api/users/:id")
+    .get((req, res) => {
+        let id = req.params.id
+        let user = mock_data.find(x => x.id == id)
+        res.send(user)
+    })
+    .patch((req, res) => {
+        let id = req.params.id
+        return res.json({ status: "pending" })
+    })
+    .delete((req, res) => {
+        let id = req.params.id
+        return res.json({ status: "pending" })
+    })
+
 
 
 

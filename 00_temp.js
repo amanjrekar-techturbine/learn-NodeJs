@@ -1,5 +1,27 @@
-let url = new URL("https://www.youtube.com/results?search_query=http+mthods&pageNo=three+and+four")
+let fs = require("fs");
+let http = require("http");
+let express = require("express");
 
-console.log(url)
-console.log(url.search)
-console.log(url.searchParams.get("search_query"))
+let app = express();
+
+app.get("/", (req, res) => {
+    fs.appendFileSync("log.txt", `${Date.now()} : ${req.method} ${req.path}`);
+    res.send("This is a home page");
+})
+
+app.get("/about", (req, res) => {
+    fs.appendFileSync("log.txt", `${Date.now()} : ${req.method} ${req.path}`);
+    res.send("This is a about page");
+})
+
+app.get("/contact", (req, res) => {
+    fs.appendFileSync("log.txt", `${Date.now()} : ${req.method} ${req.path}`);
+    res.send("This is a contact page");
+})
+
+app.listen(3000, ()=>{
+    console.log("Server Started")
+})
+
+
+

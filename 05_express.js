@@ -40,7 +40,7 @@ let app = express()                 // Create an instance of an Express applicat
 //     console.log("Server started")
 // })
 
-// 🎈 Example 2 : Using expressJS
+// 🎈 Example 2 : Using expressJS to build server
 
 app.get("/", (req, res)=>{
     // console.log(req.query)                               // Query Paramter Object { name: 'sahil', id: '202' }
