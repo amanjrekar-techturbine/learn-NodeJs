@@ -1,5 +1,6 @@
 let express = require("express");
-let mock_data = require("./MOCK_DATA.json")
+let mock_data = require("./MOCK_DATA.json");
+let fs = require("fs");
 let app = express();
 
 
@@ -74,6 +75,8 @@ let app = express();
 
 // 🎈 Example 2 : Grouping routes of same URL
 
+app.use(express.urlencoded({ extended: false }))
+
 // Get all users (Server side rendering)
 app.get("/users", (req, res) => {
     let temp = `
@@ -116,7 +119,13 @@ app
         res.send(mock_data)
     })
     .post((req, res) => {
-        return res.json({ status: "pending" })
+        let body = req.body;
+        mock_data.push({id : mock_data.length+1, ...body})
+        fs.writeFile("./MOCK_DATA.json", JSON.stringify(mock_data), (err)=>{
+            if(err){console.log(err.message)}
+        })
+        console.log(body)
+        return res.json({ status: "success", id : mock_data.length })
     })
 
 app
@@ -128,11 +137,16 @@ app
     })
     .patch((req, res) => {
         let id = req.params.id
-        return res.json({ status: "pending" })
+        return res.json( { status: "pending" } )
     })
     .delete((req, res) => {
         let id = req.params.id
-        return res.json({ status: "pending" })
+        let obj_index = mock_data.findIndex(x => x.id == id)
+        mock_data.splice(obj_index, 1);
+        fs.writeFile("./MOCK_DATA.json", JSON.stringify(mock_data), (err)=>{
+            if(err){console.log(err.message)}
+        })
+        return res.json( { status: "pending" } )
     })
 
 app.listen(3000, () => {
