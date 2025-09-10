@@ -26,7 +26,7 @@ router
             err ? console.log(err) : null;
         })
 
-        return res.json({ status: "success", id: student.id })
+        return res.status(201).json({ status: "success", id: student.id })
     })
 
 
@@ -41,7 +41,7 @@ router
         if (student) {
             return res.json(student)
         } else {
-            return res.json({ status: 404, message: "Student Not Found" })
+            return res.status(404).json({ status: 404, message: "Student Not Found" })
         }
     })
     .patch((req, res) => {
@@ -59,7 +59,7 @@ router
         });
 
         if (!student) {
-            return res.json({ status: 404, message: "Student Not Found" })
+            return res.status(404).json({ status: 404, message: "Student Not Found" })
         }
 
         if (new_student.name) {
@@ -87,7 +87,7 @@ router
         let student_index = students.findIndex(x => x.id == id);
 
         if (student_index < 0) {
-            return res.json({ status: 404, message: "Student Not Found" })
+            return res.status(404).json({ status: 404, message: "Student Not Found" })
         }
 
         students.splice(student_index, 1);
