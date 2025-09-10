@@ -43,7 +43,8 @@ const math = require("./02_modules")
 
 ⭐️ File Handling :
 
-let fs = require('fs')            // Importing built-in module to enable file handling
+// Importing built-in module to enable file handling
+let fs = require('fs')            
 
 # To create/write File
 
@@ -200,7 +201,7 @@ let myServer = http.createServer((req, res)=>{          // The callback Fn is th
 })
 
 // S3. To Set port number :
-http.listen(3000, ()=>{
+myServer.listen(3000, ()=>{
     console.log("Server Started")
 })
 
@@ -297,8 +298,13 @@ let express = require("express");
 // S2. Create app of the package
 let app = express();
 
-// S3. Create app of the package
-let app = express();
+// 🎈 To parse the data coming from postman body (JSON)
+
+app.use(express.json());                // Add this middleware
+
+# Reads the raw JSON from the request body
+# Parses it into a JS object
+# Stores it on req.body
 
 // 🎈 Get Request
 
@@ -419,4 +425,40 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
     console.log("This is middleware 2")
     return res.send({ status: "success" })          // This will end the request without reaching the server
+})
+
+⭐️ express.Router()
+
+// express.Router() is a mini Express app used to create modular route handlers.
+// Like seperate routing files for student, teachers
+
+#### In studentRoutes.js
+
+// To create router :
+const express = require('express');
+const router = express.Router();
+
+// Same, just replace app with router
+router
+    .route("/")
+    .get((req, res) => {
+        // Gets All Students
+        return res.json(students);
+    })
+
+// Export the module
+module.exports = router;
+
+#### In main file,
+
+let studentRoutes = require("./routes/studentRoutes")
+let express = require("express")
+let app = express()
+
+app.use(express.json());
+
+app.use("/api/students", studentRoutes)                     // Connect to router
+
+app.listen(3000, () => {
+    console.log("Server Started");
 })
