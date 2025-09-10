@@ -427,8 +427,8 @@ app.use((req, res, next) => {
     return res.send({ status: "success" })          // This will end the request without reaching the server
 })
 
-⭐️ express.Router()
-
+⭐️ Router
+// A router is a separate file or module where you define related routes (e.g., /users, /products).
 // express.Router() is a mini Express app used to create modular route handlers.
 // Like seperate routing files for student, teachers
 
@@ -461,4 +461,23 @@ app.use("/api/students", studentRoutes)                     // Connect to router
 
 app.listen(3000, () => {
     console.log("Server Started");
+})
+
+
+⭐️ headers
+
+// To set custom response header
+
+app.get("/", (req, res) => {
+    res.setHeader("X-MyName", "Ankit Manjrekar");         // This will add header to response
+    res.send("Success")
+})
+
+// 🎈 Best Practice : Always add X for custom headers
+
+// To read request header
+
+app.get("/", (req, res) => {
+    console.log(req.headers)
+    res.send("Success")
 })
