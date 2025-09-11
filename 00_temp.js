@@ -2,9 +2,11 @@ let studentRoutes = require("./08_router")
 let express = require("express")
 let app = express()
 
-app.use(express.json());
-
-app.use("/api/students", studentRoutes)
+app.get("/", (req, res) => {
+    console.log(req.headers.yourname)
+    res.setHeader("X-MyName", "Hello World");
+    res.status(500).json({ name : "Ankit" })
+})
 
 app.listen(3000, () => {
     console.log("Server Started");

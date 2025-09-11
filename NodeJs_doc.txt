@@ -501,3 +501,75 @@ Server error responses  (500 - 599)
 
 // To set status code on response :
 res.status(201).json({ status: "success", id: student.id })
+
+⭐️ Websocket
+
+// Websocket is a protocol(like http) where we can achieve bi-directional communication.
+// In normal http request, the client sends the request, server reponds to it and connection is closed.
+// The server cannot send responses by itself or after connection is closed.
+// Unlike HTTP, WebSocket allows real-time two-way communication between client and server.
+// Commonly used in chat apps, real-time dashboards, games, etc.
+
+# Socket.IO
+// To achieve websocket in nodeJS, we have socket.io library
+
+# In websocket.js,
+
+// To import socket.io
+let { Server } = require("socket.io"); 
+
+// Create instance of socket.io and connect with http Server
+let app = express();
+let httpServer = http.createServer(app); 
+let io = new Server(httpServer);                        // HTTP server can handle both HTTP (Express) and WebSocket (Socket.IO) traffic.
+
+// To act on event 
+io.on("connection", (socket) => {
+    console.log("A user connected : " + socket.id);
+
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+
+    // When user sends message
+    socket.on("user-msg", (msg) => {
+        // socket.broadcast.emit("chat-msg", msg);      // it sends a message to all other connected clients, except that one socket that just sent msg.
+        io.emit("chat-msg", {id : socket.id, msg})      // Sends message to everyone
+    })
+})
+
+httpServer.listen(3000, () => {
+    console.log("Server Started");
+})
+
+
+// In HTML,
+<script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket = io();
+        let input = document.querySelector("#message")
+        let submitBtn = document.querySelector("#submitBtn")
+
+        submitBtn.addEventListener("click", (e)=>{
+            let msg = input.value;
+
+            socket.emit("user-msg", msg);               // To send message to server
+            input.value = "";
+        })
+
+        socket.on("chat-msg", (msg)=>{                  // To act on server message
+            console.log(msg);
+        })
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
