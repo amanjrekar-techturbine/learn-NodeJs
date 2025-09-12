@@ -4,33 +4,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat App</title>
+    <title>Document</title>
 </head>
 
 <body>
-    <h1>Chatting</h1>
-
+    <h1>Chat APP</h1>
     <div>
-        <input type="text" id="message">
-        <button id="submitBtn">SEND</button>
+        Username : <input type="text" class="username">
     </div>
+    <br><br>
+    <div>
+        <textarea name="" class="input"></textarea><br><br>
+        <button type="button" class="submitBtn">SEND</button>
+    </div>
+    <div class="allMsg"></div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        let socket = io();
-        let input = document.querySelector("#message")
-        let submitBtn = document.querySelector("#submitBtn")
+        const socket = io();
+
+        let submitBtn = document.querySelector(".submitBtn");
+        let input = document.querySelector(".input");
+        let allMsg = document.querySelector(".allMsg");
+        let usernameField = document.querySelector(".username");
+        
+
+        
+
+        socket.on("connect", ()=>{
+            socket.emit('joinRoom', "room1", socket.id);
+        })
 
         submitBtn.addEventListener("click", (e)=>{
             let msg = input.value;
-
-            socket.emit("user-msg", msg);
-            input.value = "";
+            let username = usernameField.value;
+            input.value = ""
+            socket.emit("chatMessage", msg, "room1", username)
         })
 
-        socket.on("chat-msg", (msg)=>{
-            console.log(msg);
+        socket.on("serverMsg", (msg, username)=>{
+            let temp = `
+                <p>${username} : ${msg}</p>
+            `;
+
+            console.log("Msg Received : " + msg)
+
+            allMsg.insertAdjacentHTML("beforeend", temp);
         })
+        
     </script>
 </body>
 
