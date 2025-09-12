@@ -562,13 +562,30 @@ httpServer.listen(3000, () => {
         })
     </script>
 
+⭐️ Server side rendering
 
+EJS (Embedded JavaScript Templates) is a templating engine for Node.js, 
+commonly used with ExpressJS to render HTML pages dynamically using JavaScript.
 
+# Tags :
 
+1. <%= variable %> → Escaped Output
 
+<p>Your name is: <%= name %></p>
 
+2. <%- variable %> → Unescaped Output
 
+<%- "<b>bold</b>" %>
 
+3. <% code %> → Scriptlet Tag (no output)
+
+<% if (user) { %>
+  <p>Hello, <%= user.name %></p>
+<% } %>
+
+# In backend,
+
+res.render("profile", { name: "Ankit Manjrekar" })
 
 
 
