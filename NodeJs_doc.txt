@@ -562,6 +562,14 @@ httpServer.listen(3000, () => {
         })
     </script>
 
+⭐️ Rooms In Websocket
+
+// To create room and join : (In serverside)
+socket.join(roomName);
+
+// To send Msg in room : (In serverside)
+io.to(roomName).emit("serverMsg", msg, username);
+
 ⭐️ Server side rendering
 
 EJS (Embedded JavaScript Templates) is a templating engine for Node.js, 
@@ -586,6 +594,29 @@ commonly used with ExpressJS to render HTML pages dynamically using JavaScript.
 # In backend,
 
 res.render("profile", { name: "Ankit Manjrekar" })
+
+⭐️ MVC architecture
+
+M = Model – Database logic
+V = View – Presentation layer
+C = Controller - business logic
+
+WorkFlow : 
+
+Client -> Controller 
+  |         |
+  V         V
+View  <- Model 
+
+
+
+
+
+
+
+
+
+
 
 
 
