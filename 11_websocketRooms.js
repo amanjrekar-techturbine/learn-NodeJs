@@ -19,7 +19,7 @@ io.on("connection", (socket)=>{
 
     socket.on("joinRoom", (roomName, username)=>{
         socket.join(roomName);
-
+        // socket.leave('room1');                           // To leave room
         console.log(`${username} joined the room : ` + roomName);
     })
 

@@ -27,30 +27,46 @@
         let input = document.querySelector(".input");
         let allMsg = document.querySelector(".allMsg");
         let usernameField = document.querySelector(".username");
-        
-
-        
 
         socket.on("connect", ()=>{
-            socket.emit('joinRoom', "room1", socket.id);
+            socket.emit("joinRoom", "room9892")
         })
 
         submitBtn.addEventListener("click", (e)=>{
-            let msg = input.value;
-            let username = usernameField.value;
+            let value = input.value
+
+            socket.emit("userMsg", value, usernameField.value);
+
             input.value = ""
-            socket.emit("chatMessage", msg, "room1", username)
         })
 
         socket.on("serverMsg", (msg, username)=>{
-            let temp = `
-                <p>${username} : ${msg}</p>
-            `;
-
-            console.log("Msg Received : " + msg)
-
-            allMsg.insertAdjacentHTML("beforeend", temp);
+            allMsg.insertAdjacentHTML("beforeend", `<p>${username} : ${msg}</p>`)
         })
+        
+        
+        
+
+        // socket.on("connect", ()=>{
+        //     socket.emit('joinRoom', "room1", socket.id);
+        // })
+
+        // submitBtn.addEventListener("click", (e)=>{
+        //     let msg = input.value;
+        //     let username = usernameField.value;
+        //     input.value = ""
+        //     socket.emit("chatMessage", msg, "room1", username)
+        // })
+
+        // socket.on("serverMsg", (msg, username)=>{
+        //     let temp = `
+        //         <p>${username} : ${msg}</p>
+        //     `;
+
+        //     console.log("Msg Received : " + msg)
+
+        //     allMsg.insertAdjacentHTML("beforeend", temp);
+        // })
         
     </script>
 </body>
