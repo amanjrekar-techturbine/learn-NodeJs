@@ -778,6 +778,136 @@ app.patch("/api/students/:id", async (req, res)=>{
     }
 })
 
+⭐️ Mongo DB
+
+# Install mongoDB package
+npm install mongoose express
+
+# Import Package
+let mongoose = require("mongoose");
+
+# Connection 
+
+mongoose
+    .connect("mongodb+srv://amanjrekar_db_user:EgYJM2D8K7XezMag@cluster0.jgbyezp.mongodb.net/crud")
+    .then(()=>{ console.log("MongoDB connected"); })
+    .catch((err)=>{ console.log(err.message) })
+
+# POST REQUEST
+
+Student.create({
+    name,
+    age,
+    grade
+});
+
+// Another Way :
+let emp1 = new Student({
+    name,
+    age,
+    grade
+})
+emp1.save();
+
+# GET ALL REQUEST
+
+app.get("/api/students", async (req, res)=>{
+    let students = await Student.find();
+    console.log(students);
+    res.json(students);
+});
+
+# GET BY ID REQUEST
+
+app.get("/api/students/:id", async (req, res)=>{
+    let id = req.params.id;
+    let students = await Student.findById(id);
+    res.json(students);
+});
+
+# PUT REQUEST 
+
+app.put("/api/students/:id", async (req, res) => {
+  try {
+    const updated = await Student.findByIdAndUpdate(req.params.id, req.body);
+
+    if (!updated) {
+        return res.status(404).json({ message: 'Student not found' })
+    };
+
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+# PATCH REQUEST 
+
+app.patch("/api/students/:id", async (req, res) => {
+    let id = req.params.id;
+    let body = req.body;
+
+    if (Object.keys(body).length == 0) {
+        return res.status(400).send("Please enter required fields")
+    }
+
+    try {
+        // updated_student contains udpatedDocument or null(if id is wrong)
+        let updated_student = await Student.findByIdAndUpdate(id, body); // It returns promise
+
+        console.log(updated_student);
+
+        if (!updated_student) {
+            return res.status(404).json("Student Not Found");
+        }
+
+        res.json("Student updated successfully");
+    } catch (err) {
+        console.log(err.message);
+        res.status(404).send(err.message)
+    }
+})
+
+# DELETE REQUEST
+
+app.delete("/api/students/:id", async (req, res)=>{
+
+    let id = req.params.id;
+
+    try {
+        // deletedStudent contains deleted document or null(if no document with that ID exists)
+        let deletedStudent = await Student.findByIdAndDelete(id);     // Student.findByIdAndDelete() returns a promise
+
+        console.log(deletedStudent)
+
+        if(!deletedStudent){
+            return res.status(404).json("Student Not Found");
+        }
+
+        return res.send("Student Deleted Successfully");
+    } catch (err) {
+        
+        return res.status(500).send(err.message);
+    }
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
