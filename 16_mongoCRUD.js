@@ -16,15 +16,21 @@ let studentSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        // trim: true,
+        // lowercase: true
     },
     age: {
         type: Number,
-        required: false
+        required: false,
+        // default: 18
+        // min: 0,
+        // max: 120
     },
     grade: {
         type: String,
         required: true
+        // enum: ['A', 'B', 'C', 'D', 'F']
     }
 }, { timestamps: true })
 
@@ -65,7 +71,7 @@ app.post("/api/students/", async (req, res) => {
 // });
 
 // Pagination :
-app.get("/api/students", async (req, res)=>{
+app.get("/api/students", async (req, res) => {
     let pageNo = Number(req.query.pageNo || "1");
     let pageSize = Number(req.query.pageSize || "2");
 
@@ -86,11 +92,11 @@ app.get("/api/students/:id", async (req, res) => {
     try {
         // student contains moongose document or null(if no document with that _id exists)
         let student = await Student.findById(id);          // Student.findById() returns promise   
-        
-        if(!student){
+
+        if (!student) {
             return res.status(404).json("Student Not Found");
         }
-        
+
         res.json(student);
     } catch (err) {
         console.log(err.message);
@@ -110,7 +116,10 @@ app.patch("/api/students/:id", async (req, res) => {
 
     try {
         // updated_student contains udpatedDocument or null(if id is wrong)
-        let updated_student = await Student.findByIdAndUpdate(id, body); // It returns promise
+        let updated_student = await Student.findByIdAndUpdate(id, body, {
+            new : true,                 // return the updated document
+            runValidators : true        // validate against schema
+        }); // It returns promise
 
         console.log(updated_student);
 
@@ -127,7 +136,7 @@ app.patch("/api/students/:id", async (req, res) => {
 
 
 // DELETE request :
-app.delete("/api/students/:id", async (req, res)=>{
+app.delete("/api/students/:id", async (req, res) => {
 
     let id = req.params.id;
 
@@ -137,13 +146,13 @@ app.delete("/api/students/:id", async (req, res)=>{
 
         console.log(deletedStudent)
 
-        if(!deletedStudent){
+        if (!deletedStudent) {
             return res.status(404).json("Student Not Found");
         }
 
         return res.send("Student Deleted Successfully");
     } catch (err) {
-        
+
         return res.status(500).send(err.message);
     }
 })

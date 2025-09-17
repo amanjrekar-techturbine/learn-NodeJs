@@ -891,10 +891,52 @@ app.delete("/api/students/:id", async (req, res)=>{
     }
 })
 
+⭐️ Authentication
 
+# Types :
+1. Statefull : The server keeps track of user sessions.
+2. Stateless(JWT) : The server does not store any session information.
 
+# Stateful :
 
+-> Client logs in 
+-> if successful (server creates sessionID , Stores locally and send it to client using cookie)
+-> when client send req, cookie is also added with the request.
+-> Server get the cookie, verify it by locally saved data
+-> If successful, server allows the client.
 
+# Stateless :
+-> Client logs in 
+-> Token is generated with payload and signature(which have secret key).
+-> sends back to client using cookie
+-> when client send request, the JWT is also passed with it
+-> Server verifies the JWT using the signature(which has secret key).
+-> If successful, client request is accepted.
+
+# JWT :
+
+// Install Package :
+npm install jsonwebtoken
+
+// Import Package :
+let jwt = require("jsonwebtoken");
+
+// Create JWT token :
+let secret_key = "APLO$123" // It is manual
+return jwt.sign(payload, secret_key)    // Returns JWT // payload = object containing user info
+
+// To verify Token
+jwt.verify(token, secret_key) // Returns user info if valid else throws error
+
+# Authorization :
+const authorizeClient = (roles = []) => {
+  return (req, res, next) => {
+    if (!req.client || !roles.includes(req.client.role)) {
+      return res.status(403).json({ msg: 'Forbidden: You are not authorized' });
+    }
+    next();
+  };
+};
 
 
 
