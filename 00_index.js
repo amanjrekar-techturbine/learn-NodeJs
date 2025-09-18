@@ -1,22 +1,42 @@
 let express = require("express");
-let cookieParser = require("cookie-parser");
+let fs = require("fs");
+let status = require("express-status-monitor");
+let zlib = require("zlib");
 let app = express();
-app.use(express.json());
-app.use(cookieParser());
 
-app.get("/", (req, res)=>{
+app.use(status())
 
-    // To get cookie
-    let cookie = req.cookies
-    console.log(cookie);
 
-    // To set cookie :
-    res.cookie("random", 1234, {
-        httpOnly : true
+// Show file Data to browser
+app.get("/", (req, res) => {
+
+    // Without Stream
+    // fs.readFile("./50mb.txt", ("utf-8"), (err, data)=>{
+    //     if(err){
+    //         console.log(err.message);
+    //         return res.send(err.message);
+    //     }
+
+    //     return res.send(data)
+    // })
+
+    // With Stream
+    let stream = fs.createReadStream("./50mb.txt", "utf-8");
+
+    stream.on("data", (chunk)=>{
+        res.write(chunk);
     })
-    res.end("Got the cookie");
+
+    stream.on("end", () => res.end());
 })
 
-app.listen(3000, ()=>{
+// Zip File using streams
+app.get("/zip", (req ,res)=>{
+    fs.createReadStream("./50mb.txt").pipe(zlib.createGzip()).pipe(fs.createWriteStream("./50mb.zip"))
+
+    res.end("Closed")
+})
+
+app.listen(3000, () => {
     console.log("Server Started");
 })

@@ -980,11 +980,38 @@ app.get("/", (req, res)=>{
     res.end("Cookies has been set");
 })
 
+⭐️ Streams
 
+Streams are objects in Node.js that allow you to read or write data in chunks, instead of loading everything into memory at once.
 
+# Types of Streams
 
+1. Readable Streams : 
+Used for reading data.
+Example : 
+fs.createReadStream()  // To read files
+http.IncomingMessage       // For HTTP requests
+process.stdin                  // For reading input from the console.
 
+2. Writable Streams :
+Used for writing data
+Example : 
+fs.createWriteStream()  // To write files
+http.serverResponse         // For HTTP response
+process.stdout                  // For writing output to the console.
 
+3. Duplex Stream :
+streams that are both readable and writable.
+Example :
+network sockets(net.Socket)
+zlib streams    // For compression/decompression
+crypto streams
+
+4. Transform Stream :
+A special type of duplex streams where output is the transformed version of the input.
+Example :
+zlib.createGzip() for compressing data
+crypto.createCipher() for encryption
 
 
 
