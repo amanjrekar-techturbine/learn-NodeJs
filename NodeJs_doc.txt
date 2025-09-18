@@ -1013,8 +1013,22 @@ Example :
 zlib.createGzip() for compressing data
 crypto.createCipher() for encryption
 
+⭐️ Environment variables
 
+It is used to store configuration values like api-keys, database urls, secret-keys, port number, etc,
+in key-value pair outside your code
 
+// Install Package :
+npm install dotenv
+
+// Import :
+require("dotenv").config()          // .config() -> Loads .env file contents into process.env by default.
+
+// In .env :
+PORT=3000
+
+// To access environment variable
+let port = process.env.PORT
 
 
 
