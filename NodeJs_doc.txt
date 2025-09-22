@@ -1030,6 +1030,43 @@ PORT=3000
 // To access environment variable
 let port = process.env.PORT
 
+⭐️ Password Encrypt (Bcrypt) :
+
+# Install package :
+npm i bcrypt
+
+let bcrypt = require("bcrypt");
+
+let hashPassword = async (password) => {
+    let hashedPassword = await 	 bcrypt.hash(password, 10);
+    return hashedPassword;
+}
+
+// To compare hash password : 
+
+let comparePassword = async (password, hashedPassword) => {
+    let isPasswordValid = await bcrypt.compare(password, hashedPassword);
+    return isPasswordValid;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -17,6 +17,14 @@ pool.on("connect", (client)=>{
     console.log("Connection Established")
 })
 
+// 🎈 Manually connection
+// pool.connect()
+//     .then(client => { console.log("Connected to PostgreSQL"); 
+//         // Be sure to release the client 
+//         client.release(); // The connection stays occupied and your app may freeze or crash due to exhausted pool
+//     }) 
+//     .catch(err => { console.error("Connection error:", err.message); });
+
 // POST REQUEST
 app.post("/api/students", async (req, res) => {
     let { id, name, age, grade } = req.body;
@@ -24,7 +32,7 @@ app.post("/api/students", async (req, res) => {
     let query = "INSERT INTO students(id, name, age, grade) VALUES($1, $2, $3, $4)";
 
     try {
-        await pool.query(query, [id, name, age, grade])
+        await pool.query(query, [id, name, age, grade])             // Returns pormise with result object(rowCount, rows, command)
         return res.status(201).send("Student added successfully");
     } catch (error) {
         return res.status(500).send(err.message)
@@ -97,7 +105,7 @@ app.put("/api/students/:id", async (req, res) => {
         return res.status(400).send("Please Send All Fields");
     }
 
-    let query = "UPDATE students SET name=$1, age=$2, grade=$3 WHERE id=$4";
+    let query = "UPDATE students SET name=$1, age=$2, grade=$3 WHERE id=$4 RETURNING *";
 
     try {
 
@@ -118,7 +126,7 @@ app.put("/api/students/:id", async (req, res) => {
 app.delete("/api/students/:id", async (req, res) => {
     let id = req.params.id;
 
-    let query = "DELETE FROM students WHERE id=$1";
+    let query = "DELETE FROM students WHERE id=$1 RETURNING *";
 
     try {
 

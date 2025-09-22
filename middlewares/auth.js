@@ -3,6 +3,7 @@ let { getClientSession } = require("../service/auth");
 async function authenticateClient(req, res, next) {
 
     let sessionId = req.headers["authorization"];
+    console.log("In Authentication")
 
     if (!sessionId || !sessionId.startsWith("Bearer ")) {
         return res.status(400).send("No sessionID found");
@@ -18,7 +19,7 @@ async function authenticateClient(req, res, next) {
         req.client = client;
         next();
     } catch (error) {
-        res.status(500).send(error.message)
+        return res.status(500).send(error.message)
     }
 }
 
