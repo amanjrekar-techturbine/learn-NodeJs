@@ -1081,9 +1081,37 @@ let createRefreshToken = (payload) => {
     return jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "21d" })
 }
 
+⭐️ Custom Error Response & Success Response :
 
+# Custom Error Response
 
+class ApiError extends Error{
+    constructor(
+        statusCode,
+        message = "Random Error Occured"
+    ){
+        super(message)
+        this.statusCode = statusCode;
+        this.success = false;
+    }
+}
 
+module.exports = ApiError
+
+# Custom Success Response
+
+class ApiResponse{
+    constructor(
+        statusCode,
+        data
+    ){
+        this.success = true,
+        this.statusCode = statusCode,
+        this.data = data
+    }
+}
+
+module.exports = ApiResponse
 
 
 

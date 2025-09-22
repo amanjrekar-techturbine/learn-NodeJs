@@ -1,227 +1,180 @@
-require("dotenv").config()
 let express = require("express");
-let jwt = require("jsonwebtoken");
-let cookieParser = require("cookie-parser");
-let mongoose = require("mongoose");
-let app = express();
-let secret_key = process.env.SECRET_KEY;
+let { Pool } = require("pg");
 
+let app = express();
 
 app.use(express.json());
-app.use(cookieParser());
 
-mongoose
-    .connect("mongodb+srv://amanjrekar_db_user:EgYJM2D8K7XezMag@cluster0.jgbyezp.mongodb.net/crud")
-    .then(() => { console.log("MongoDB connection established"); })
-    .catch((err) => console.log(err.message))
+let pool = new Pool({
+    host: "localhost",
+    user: "postgres",
+    password: "Tech1mini",
+    port: 5433,
+    database: "demodb"
+})
 
-let clientSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
+pool.on("connect", (client)=>{
+    console.log("Connection Established")
+})
 
-    username: {
-        type: String,
-        required: true
-    },
+// 🎈 Manually connection
+pool.connect()
+    .then(client => { console.log("Connected to PostgreSQL"); 
+        // Be sure to release the client 
+        client.release(); // The connection stays occupied and your app may freeze or crash due to exhausted pool
+    }) 
+    .catch(err => { console.error("Connection error:", err.message); });
 
-    password: {
-        type: String,
-        required: true
-    },
+// POST REQUEST
+app.post("/api/students", async (req, res) => {
+    let { id, name, age, grade } = req.body;
 
-    role: {
-        type: String,
-        required: true,
-        enum: ["ADMIN", "MANAGER", "USER", "VISITOR"],
-        default: "VISITOR"
-    }
-}, { timestamps: true })
-
-let Client = mongoose.model("client", clientSchema);
-
-// Authentication
-function createJwt(payload) {
-    return jwt.sign(payload, secret_key);
-}
-
-function verifyToken(token) {
-    return jwt.verify(token, secret_key);
-}
-
-function authenticationMiddleware(req, res, next) {
-    let tokenHeader = req.headers["authorization"];
-
-    if (!tokenHeader || !tokenHeader.startsWith("Bearer ")) {
-        return res.status(400).json({ "msg": "JWT token not found in header" })
-    }
-
-    let token = tokenHeader.slice(7)
+    let query = "INSERT INTO students(id, name, age, grade) VALUES($1, $2, $3, $4)";
 
     try {
-        let user = verifyToken(token);
-        console.log(user)
+        await pool.query(query, [id, name, age, grade])             // Returns pormise with result object(rowCount, rows, command)
+        return res.status(201).send("Student added successfully");
+    } catch (error) {
+        return res.status(500).send(err.message)
+    }
 
-        req.user = user
-        next()
+})
+
+// GET ALL REQUEST
+app.get("/api/students", async (req, res) => {
+    let query = "SELECT * FROM students";
+
+    try {
+        let result = await pool.query(query);
+        return res.json(result.rows);
     } catch (err) {
-        return res.status(500).json({ msg: err.message })
+        return res.send(err.message)
     }
-}
+})
 
-function authorizationMiddleware(roles = []) {
+// GET BY ID
+app.get("/api/students/:id", async (req, res) => {
 
-    return (req, res, next) => {
+    let id = req.params.id;
 
-        if (!req.user) {
-            res.status(400).json({ "msg": "Please login" })
-        }
-
-        let user = req.user
-
-        if (!roles.includes(user.role)) {
-            return res.status(403).json({ "msg": "You are not allowed" })
-        }
-
-        next();
-    }
-}
-
-app.get("/api/clients/paginated", authenticationMiddleware, async (req, res) => {
-
-    let pageNo = Number(req.query.pageNo || "1")
-    let pageSize = Number(req.query.pageSize || "3")
-    let offset = (pageNo - 1) * pageSize
+    let query = "SELECT * FROM students WHERE id=$1";
 
     try {
 
-        let client = await Client.find().skip(Number(offset)).limit(Number(pageSize));
+        let result = await pool.query(query, [id]);
 
-        return res.json(client);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ "msg": error.message });
+        if (result.rowCount == 0) {
+            return res.status(404).send("Student Not Found");
+        }
+
+        return res.json(result.rows);
+
+    } catch (err) {
+        return res.send(err.message);
     }
+
 
 })
 
-app.post("/api/clients/login", async (req, res) => {
+// PUT REQUEST
+app.put("/api/students/:id", async (req, res) => {
+    let id = req.params.id;
+    let { name, age, grade } = req.body;
 
-    let body = req.body;
+    if(!name || !age || !grade){
+        return res.status(400).send("Please Send All Fields");
+    }
+
+    let query = "UPDATE students SET name=$1, age=$2, grade=$3 WHERE id=$4 RETURNING *";
 
     try {
 
-        let client = await Client.findOne(body);
+        let result = await pool.query(query, [name, age, grade, id]);
 
-        if (!client) {
-            res.status(404).json({ "msg": "Invalid username or password" })
+        if (result.rowCount == 0) {
+            return res.status(404).send("Student Not Found");
         }
 
-        let token = createJwt({ username: client.username, role: client.role });
+        return res.send("Student Updated Successfully");
 
-        return res.json({ jwt: token });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ "msg": error.message });
+    } catch (err) {
+        return res.send(err.message);
     }
+})
+
+// DELETE REQUEST
+app.delete("/api/students/:id", async (req, res) => {
+    let id = req.params.id;
+
+    let query = "DELETE FROM students WHERE id=$1 RETURNING *";
+
+    try {
+
+        let result = await pool.query(query, [id]);
+
+        if(result.rowCount == 0){
+            return res.status(404).send("Student Not Found");
+        }
+
+        return res.send("Student Deleted Successfully");
+
+    } catch (err) {
+        return res.send(err.message);
+    }
+
+
+});
+
+// PATCH REQUEST
+app.patch("/api/students/:id", async (req, res)=>{
+
+    let id = req.params.id;
+    let {name, age, grade} = req.body;
+
+    let fields = [];
+    let values = [];
+    let index = 1;
+
+    if(name){
+        fields.push(`name=$${index++}`);
+        values.push(name);
+    }
+
+    if(age){
+        fields.push(`age=$${index++}`);
+        values.push(age);
+    }
+
+    if(grade){
+        fields.push(`grade=$${index++}`);
+        values.push(grade);
+    }
+
+    values.push(id)
+
+    if(fields.length == 0){
+        return res.status(400).send("No fields available");
+    }
+
+    let query = `UPDATE students SET ${fields.join(", ")} WHERE id=$${index}`;
+
+    try {
+        let result = await con.query(query, values);
+        
+        if(result.rowCount == 0){
+            return res.status(404).send("Student Not Found");
+        }
+
+        return res.send("Student Updated Successfully");
+
+    } catch (err) {
+        return res.status(500).send(err.message);
+    }
+    
+    
 
 })
 
-app
-    .route("/api/clients")
-    .get(authenticationMiddleware, authorizationMiddleware(["ADMIN", "MANAGER"]), async (req, res) => {
-
-        try {
-            let clients = await Client.find();
-            res.json(clients);
-
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ msg: error.message });
-        }
-    })
-    .post(async (req, res) => {
-        let { name, username, password, role } = req.body;
-
-        let obj = (role) ? { name, username, password, role } : { name, username, password }
-
-        try {
-
-            let result = await Client.create(obj);
-
-            return res.status(201).json(result);
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ "msg": error.message });
-        }
-
-    })
-
-app.route("/api/clients/:id")
-    .get(async (req, res) => {
-        let id = req.params.id;
-
-        try {
-
-            let client = await Client.findById(id);
-
-            if (!client) {
-                return res.status(404).json({ "msg": "Client not found" });
-            }
-
-            return res.json(client);
-
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ "msg": error.message });
-        }
-
-    })
-    .patch(async (req, res) => {
-        let id = req.params.id;
-        let body = req.body;
-
-        try {
-
-            let client = await Client.findByIdAndUpdate(id, body, {
-                new: true,
-                runValidators: true
-            });
-
-            if (!client) {
-                return res.status(404).json({ "msg": "Client not found" });
-            }
-
-            return res.json(client);
-
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ "msg": error.message });
-        }
-
-    })
-    .delete(async (req, res) => {
-        let id = req.params.id;
-
-        try {
-
-            let client = await Client.findByIdAndDelete(id);
-
-            if (!client) {
-                return res.status(404).json({ "msg": "Client not found" });
-            }
-
-            return res.json(client);
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ "msg": error.message });
-        }
-
-    })
-
-
-
-app.listen(3000, () => {
-    console.log("Server started");
+app.listen(3000, ()=>{
+    console.log("Server Started");
 })
