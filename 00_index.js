@@ -1,5 +1,8 @@
+require("dotenv").config();
 let express = require("express");
 let { Pool } = require("pg");
+let bcrypt = require("bcrypt");
+let jwt = require("jsonwebtoken");
 
 let app = express();
 
@@ -13,9 +16,6 @@ let pool = new Pool({
     database: "demodb"
 })
 
-pool.on("connect", (client)=>{
-    console.log("Connection Established")
-})
 
 // 🎈 Manually connection
 pool.connect()
@@ -24,6 +24,34 @@ pool.connect()
         client.release(); // The connection stays occupied and your app may freeze or crash due to exhausted pool
     }) 
     .catch(err => { console.error("Connection error:", err.message); });
+
+// Login Request
+app.post("/api/users/login", async (req, res) => {
+    let { email, password } = req.body;
+
+    let query = "SELECT * FROM USERS WHERE email=$1";
+
+    try {
+        let user = await pool.query(query, [email]);
+
+        if(user.rowCount ===0){
+            return res.status(404).send("User not found");
+        }
+
+        let isPasswordValid = await bcrypt.compare(password, user.rows[0].password)
+
+        if(!isPasswordValid){
+            return res.status(400).send("Invalid Password");
+        }
+
+        let accessToken = jwt.sign()
+
+        return res.status(201).send("Student added successfully");
+    } catch (error) {
+        return res.status(500).send(err.message);
+    }
+
+})
 
 // POST REQUEST
 app.post("/api/students", async (req, res) => {
